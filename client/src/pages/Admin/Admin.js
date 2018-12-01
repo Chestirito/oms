@@ -2,10 +2,9 @@ import React, { Component } from "react";
 // import { Col, Row, Container } from "../../components/Grid";
 // import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
-// import signupBtn from "../../components/signupBtn";
+import SignupBtn from "../../components/SignupBtn";
 import "./Admin.css";
 import logo from "./img/barometer.png";
-import Axios from "axios";
 
 export default class Admin extends Component {
   constructor(props) {
@@ -95,7 +94,7 @@ export default class Admin extends Component {
              
             </div>
             <div className = "loginbutton">
-            {/* <LoginBtn onClick={this.handleLogin} type="submit" /> */}
+            <SignupBtn onClick={this.handleLogin} type="submit" />
           </div>
           </div>
         </form>
