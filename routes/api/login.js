@@ -16,4 +16,20 @@ module.exports = function(app) {
             res.json(result);
         });
     });
+
+    
+    app.post("/api/signup", (req,res) => {
+        db.User.create(
+
+            req.body
+
+            ).then(result => {
+            console.log(result)
+            res.json(result)
+        })
+         .catch(function(err) {
+             res.json(err)
+         });
+    });
+
 }
