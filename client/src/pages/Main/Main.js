@@ -18,8 +18,8 @@ import logo from "../Login/img/barlogo-01.png";
 import matchSorter from "match-sorter";
 import CloseSideBtn from "../../components/CloseSideBtn";
 import HoldingsBtn from "../../components/holdingsBtn/holdingsBtn";
-import ThemeButton from "../../components/themebtn/themebtn";
-import SendButton from "../../components/sendBtn/sendBtn";
+// import ThemeButton from "../../components/themebtn/themebtn";
+// import SendButton from "../../components/sendBtn/sendBtn";
 
 // import { elementContains } from "@uifabric/utilities";
 initializeIcons();

@@ -8,7 +8,7 @@ module.exports = function(app) {
 
     app.post("/api/login/accounts", passport.authenticate('local'),
     function(req,res){
-        console.log("hello", req.user);
+        console.log("hello", req.user.username);
         res.json(true)
         // db.User.findOne({
         //     where: {

@@ -31,7 +31,6 @@
     "if-env": "^1.0.4",
     "match-sorter": "^2.3.0",
     "mysql2": "^1.5.3",
-    "npm-install-peers": "^1.2.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "react-button-component": "^1.0.0",

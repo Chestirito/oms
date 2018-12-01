@@ -6,26 +6,30 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 var db = require("./models");
 // Define middleware here
-
+const keys = require("./routes/api/keys/keys");
+const cookieSession = require('cookie-session');
 var passport = require('passport');
 const passportConfig = require('./config/passport');
 var session = require('express-session')
 
-app.use(session({
-  secret: 'thisisthesecretsessionkey',
-  saveUninitialized: true,
-  cookie: { secure: true }
+app.use(cookieSession({
+  maxAge:24 * 60 * 60 * 1000,
+  keys:[keys.session.cookieKey]
 }));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+
 // Serve up static assets (usually on heroku)
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
+
 
 // Add routes, both API and view
 //app.use(routes);
