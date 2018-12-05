@@ -104,12 +104,11 @@ input[type="text"]:focus {
 }
 
 .logodiv{
- padding-top:30px;
  padding-left: 20px;
 }
 
 .logoMain {
-  width: 60px;
+  width: 86px;
 }
 
 .label {
@@ -182,7 +181,7 @@ transform: translateX(130%);
   /* border-left: 1px solid  rgb(68, 54, 36); */
   
   height:80vh;
-  width:30%;
+  width:40%;
   -webkit-animation: slide-left .3s ease-out;
   -moz-animation: slide-left .3s ease-out;
 }
@@ -214,7 +213,7 @@ transform: translateX(130%);
   display:flex;
   flex-direction: column;
   flex-wrap: wrap;
-  width:70%;
+  width:60%;
 }
 
 .ReactTable{

@@ -23,8 +23,14 @@ body {
 }
 
 .logo {
-  width: 100%;
-  margin-bottom: 8vh;
+  margin-right: 2.5vh;
+  width: 18%;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+}
+
+.loginlogodiv{
+  text-align: center;
 }
 
 .loginbutton{

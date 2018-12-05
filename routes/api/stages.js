@@ -10,7 +10,7 @@ module.exports = function(app) {
     app.post("/api/Staging/post", function(req, res){
       // console.log(req.body.portfolio);
       // console.log("hahaha");
-        db.Stages.create(req.body
+        db.Stages.bulkCreate(req.body
 
         ).then(function(result) {
             // console.log(

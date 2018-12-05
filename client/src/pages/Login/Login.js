@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import API from "../../utils/API";
 import LoginBtn from "../../components/LoginBtn";
 import "./Login.css";
-import logo from "./img/barometer.png";
+import logo from "./img/barlogo-01.png";
 import Axios from "axios";
 
 export default class Login extends Component {
@@ -62,10 +62,12 @@ export default class Login extends Component {
   render() {
     return (
       <div className="logindiv">
+          <div className ="loginlogodiv">
+            <img className="logo" alt="icon" src={logo} /></div>
         <form className="card centered" onSubmit={this.handleSubmit}>
           <div className="card-body">
-            <img className="logo" alt="icon" src={logo} />
-            <h2> Login </h2>
+      
+           
             <div className="form-group">
               <input
                 className="form-control"
