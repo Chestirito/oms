@@ -40,6 +40,10 @@ class Main extends Component {
     holdingsData: [],
     oldWeight: 0,
     NAV: 0,
+    allHold: {
+      newWeight: 0,
+      changed: false
+    },
     showsidebar: false,
     showExpanded: false,
     portfolioname: "",
@@ -57,8 +61,8 @@ class Main extends Component {
     this.loadPortfolioStaging();
     this.handlePortfolioManager();
     this.handleAllHolding();
-    setTimeout(this.autoRefresh, 5000);
-    this.timeStamp();
+    //setTimeout(this.autoRefresh, 5000);
+    //this.timeStamp();
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
@@ -260,32 +264,43 @@ class Main extends Component {
     const holdings = this.state.holdingsData;
     const portfolios = this.state.data;
     portfolios.push(...holdings)
+    let saveThis = [];
     //console.log(portfolios)
     portfolios.map(element => {
       if (element.changed) {
-        this.handleSaveStages(element);
+        //this.handleSaveStages(element);
+        saveThis.push(element);
       }
     });
+
+    this.handleSaveStages(saveThis);
+
+    if(this.state.allHold.changed){
+      this.calculateForAllHolding();
+    }
   };
   // user [...]
   handleSaveStages = data => {
-    
-    const save = {
-      portfolio_manager: this.state.portfolio_manager,
-      ticker: data.holdings ? data.ticker : this.state.ticker,
-      portfolio: data.portfolio,
-      old_weight: data.old_weight,
-      new_weight: data.newWeight,
-      shares_buy_sell: data.shares_buy_sell,
-      buy_or_sell: data.buy_or_sell,
-      ticker_name: data.holdings ? null : this.state.tickerName
-    };
+    let storeArray = [];
+    data.map(element => {
+      const store = {
+        portfolio_manager: this.state.portfolio_manager,
+        ticker: element.holdings ? element.ticker : this.state.ticker,
+        portfolio: element.portfolio,
+        old_weight: element.old_weight,
+        new_weight: element.newWeight,
+        shares_buy_sell: element.shares_buy_sell,
+        buy_or_sell: element.buy_or_sell,
+        ticker_name: element.holdings ? null : this.state.tickerName
+      };
+      storeArray.push(store);
+    });
+  
 
-    API.postStagingData(save)
+    API.postStagingData(storeArray)
       .then(res => {
         this.loadPortfolioStaging();
         this.setupHoldingsData(this.state.holdingsData);
-        // this.loadCashUpdate();
       })
       .catch(err => console.log(err));
   };
@@ -494,6 +509,30 @@ class Main extends Component {
     //return notional;
   }
 
+  changeAllholding = event => {
+    this.setState({
+      allHold : {
+        newWeight : event,
+        changed : event ? true : false
+      }
+    })
+  }
+
+  calculateForAllHolding(){
+    let newWeight = this.state.allHold.newWeight;
+    let holdings = this.state.holdingsData;
+    let storeData = []
+    holdings.map(element => {
+      //console.log(element);
+      let newShares = ((newWeight/100)*element.NAV)/element.closeprice;
+      element.shares_buy_sell = Math.round(newShares / 100) * 100;
+      element.buy_or_sell = ((newWeight>0) ? "buy" : "sell");
+      element.newWeight = parseFloat(newWeight) + parseFloat(element.old_weight);
+      //console.log(element);
+      storeData.push(element);
+    })
+    this.handleSaveStages(storeData);
+  }
   //old weight
   handleCurrentWeight = () => {
     const portfolios = this.state.data;
@@ -820,28 +859,34 @@ class Main extends Component {
                       {
                         Header: "Notional ($)",
                         accessor: "notional",
-                        // Cell: props => {
-                        //   // <div>
-                        //   //   {props.original.portfolio ? (props.original.shares * props.original.closeprice).toFixed(2): (props.original.SUM * props.original.closeprice).toFixed(2)}
-                        //   // </div>
-                        //   return <span>{this.getNotional(props)}</span>;
-                        // },
                         minWidth: 125,
                         filterable: false
                       },
                       {
                         Header: "Current Weight(%)",
                         accessor: "old_weight",
-                        // Cell: props => {
-                        //   return <span>{this.holdingCurrentWeight(props)}</span>;
-                        // },
                         filterable: false,
                         show: this.state.showExpanded,
                         maxWidth: 200
                       },
                       {
                         Header: "New Weight(%)",
-                        filterable: false,
+                        filterable: true,
+                        Filter: ({ filter, onChange }) =>
+                          <div>
+                            <input
+                              type="text"
+                              id="input1"
+                              placeholder="%"
+                              style={{
+                                width: "50px"
+                              }}
+                              className="number"
+                              value={this.state.allHold.newWeight ? this.state.allHold.newWeight  : ""}
+                              onChange={event => this.changeAllholding(event.target.value)}
+                            />
+                          </div>
+                        ,
                         Cell: props => (
                           <div>
                             <input
