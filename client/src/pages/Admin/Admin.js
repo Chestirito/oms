@@ -16,6 +16,7 @@ export default class Admin extends Component {
       firstName: "",
       lastName: "",
       checked: true,
+      usersData: [],
     };
   }
 
@@ -66,8 +67,20 @@ export default class Admin extends Component {
   handleAllUsers = () => {
       API.getUsers()
       .then(res => {
-          console.log(res)
+          console.log(res.data)
+          this.displayAllUsers(res.data)
       })
+  }
+
+  displayAllUsers = (users) => {
+    const listUsers =
+    users.map(element => {
+        
+    });
+    this.setState({
+        usersData: users
+    });
+    console.log(this.state.usersData)
   }
 
   handleLogin = () => {
@@ -99,7 +112,7 @@ export default class Admin extends Component {
         <div className="container">
             <div className="row">
                 <div className="col-6">
-                    <h1>Users List</h1>
+                    <h1>Users List</h1> 
                 </div>
                 <div className="col-6">
 
