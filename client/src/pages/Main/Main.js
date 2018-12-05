@@ -41,6 +41,7 @@ class Main extends Component {
     oldWeight: 0,
     NAV: 0,
     showsidebar: false,
+    showExpanded: false,
     portfolioname: "",
     timer: 0
   };
@@ -57,8 +58,7 @@ class Main extends Component {
     this.handlePortfolioManager();
     this.handleAllHolding();
     setTimeout(this.autoRefresh, 5000);
-    setTimeout(this.timeStamp, 1000);
-    //this.autoRefresh();
+    this.timeStamp();
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
@@ -258,7 +258,7 @@ class Main extends Component {
   //((new weight - old weight) *x* NAV) */* (price per share *x* FX rate)
   handleStageSubmit = () => {
     const holdings = this.state.holdingsData;
-    const portfolios = this.state.data
+    const portfolios = this.state.data;
     portfolios.push(...holdings)
     //console.log(portfolios)
     portfolios.map(element => {
@@ -284,6 +284,7 @@ class Main extends Component {
     API.postStagingData(save)
       .then(res => {
         this.loadPortfolioStaging();
+        this.setupHoldingsData(this.state.holdingsData);
         // this.loadCashUpdate();
       })
       .catch(err => console.log(err));
@@ -314,18 +315,30 @@ class Main extends Component {
     });
     let weight =  portfolios[index].newWeight / 100 - portfolios[index].old_weight / 100;
     this.handleBuyOrSell(index, weight, portfolios);
-    const price = props.original.holdings ? portfolios[index].closeprice : this.state.price;
-    if (weight < 0) {
+    let price; //= props.original.holdings ? portfolios[index].closeprice : this.state.price;
+    if(props.original.holdings){
+      price = portfolios[index].closeprice;
+      let newShares =
+        (Math.abs(weight) * portfolios[index].NAV) /
+        (price);
+      return (portfolios[index].shares_buy_sell =
+        Math.round(newShares / 100) * 100);
+    }
+    else{
+      price = this.state.price;
+      // if (weight < 0) {
       let newShares =
         (Math.abs(weight) * portfolios[index].NAV) /
         (price * this.state.exchangerate);
       return (portfolios[index].shares_buy_sell =
         Math.round(newShares / 100) * 100);
-    } else {
-      let newShares =
-        (weight * portfolios[index].NAV) / (price * this.state.exchangerate);
-      return (portfolios[index].shares_buy_sell =
-        Math.round(newShares / 100) * 100);
+      // } else {
+      //   let newShares =
+      //     (weight * portfolios[index].NAV) / 
+      //     (price * this.state.exchangerate);
+      //   return (portfolios[index].shares_buy_sell =
+      //     Math.round(newShares / 100) * 100);
+      // }
     }
   };
 
@@ -365,82 +378,93 @@ class Main extends Component {
     //this.setState
   };
 
-  testing = () => {
-    console.log("click works");
-  };
-
   handleHoldingTable = props => { 
     
     if (this.state.showsidebar) {
       const portfolio = props.original.portfolio;
       const oldWeight = props.original.old_weight;
+      //**********************CALCULATE oldWeight based on notional******/
       const nav = props.original.NAV;
       this.setState({
         oldWeight: oldWeight,
         NAV: nav,
-        portfolioname: portfolio
+        portfolioname: portfolio,
+        showExpanded: true
       });
       API.getHoldingsByPortfolio(portfolio)
         .then(res => {
           this.setupHoldingsData(res.data);
         })
         .catch(err => console.log(err));
+    }
+    else{
+        this.toggleSideBar();
+        const portfolio = props.original.portfolio;
+        const oldWeight = props.original.old_weight;
+        const nav = props.original.NAV;
+        this.setState({
+          oldWeight: oldWeight,
+          NAV: nav,
+          portfolioname: portfolio,
+          showExpanded: true
+        });
+        API.getHoldingsByPortfolio(portfolio)
+          .then(res => {
+            this.setupHoldingsData(res.data);    
+          })
+          .catch(err => console.log(err));
+    };
   }
-else{
-    this.toggleSideBar();
-    const portfolio = props.original.portfolio;
-    const oldWeight = props.original.old_weight;
-    const nav = props.original.NAV;
-    this.setState({
-      oldWeight: oldWeight,
-      NAV: nav,
-      portfolioname: portfolio
-    });
-    API.getHoldingsByPortfolio(portfolio)
-      .then(res => {
-        this.setupHoldingsData(res.data);    
-      })
-      .catch(err => console.log(err));
-  };
+  holdingCurrentWeight = data =>{
+    //let isPortfolio = data.portfolio; 
+    let currentWeight = ((data.notional/data.NAV)*100).toFixed(2);
+    return currentWeight;
+
   }
-  
+
   showAllHoldings = () => {
     if (this.state.showsidebar){
-    this.setState({
-      portfolioname:"All Holdings"
-    })
-   
-    API.aggregateHoldings()
-      .then(res => {
-        //console.log(res)
-        this.setupHoldingsData(res.data);
+      this.setState({
+        portfolioname:"All Holdings",
+        showExpanded: false
       })
-      .catch(err => console.log(err));
-    }
-      else
-      { this.toggleSideBar(); this.setState({
-        portfolioname:"All Holdings"
-      })
-     
+    
       API.aggregateHoldings()
         .then(res => {
           //console.log(res)
           this.setupHoldingsData(res.data);
         })
         .catch(err => console.log(err));
-      }
+    }
+    else
+    { 
+      this.toggleSideBar(); 
+      this.setState({
+        portfolioname:"All Holdings",
+        showExpanded: false
+      })
+      
+      API.aggregateHoldings()
+        .then(res => {
+          //console.log(res)
+          this.setupHoldingsData(res.data);
+        })
+        .catch(err => console.log(err));
+    }
   };
 
   setupHoldingsData = data => {
-    //console.log(data)
+    // console.log("from setup holdingdata");
+    // console.log(data);
     data.map(element => {
+      element.notional = this.setupNotional(element);
       element.newWeight = "";
       element.changed = false;
       element.holdings = true;
       element.shares_buy_sell = 0;
-      element.old_weight = this.state.oldWeight;
       element.NAV = this.state.NAV;
       element.buy_or_sell = "";
+      element.old_weight = this.holdingCurrentWeight(element);
       // element.total_ticker_price = this.data.SUM;
     });
     this.setState({
@@ -456,23 +480,32 @@ else{
       .catch(err => console.log(err));
   };
 
+  setupNotional = data =>{
+    let isPortfolio = data.portfolio; 
+    let notional;
+    if(isPortfolio){
+      notional = (data.shares * data.closeprice).toFixed(2);
+      return notional;
+    }else{
+      notional = (data.SUM * data.closeprice).toFixed(2);
+      return notional;
+    }
+    
+    //return notional;
+  }
+
   //old weight
   handleCurrentWeight = () => {
     const portfolios = this.state.data;
-    // const index = portfolios.findIndex(element => {
-    //   return element.id === props.row.id;
-    // });
     portfolios.map(element => {
       const shares = element.shares_owned;
       const nav = element.NAV;
       let currentWeight = (((shares * this.state.price * this.state.exchangerate) / nav) *100).toFixed(2);
       element.old_weight = currentWeight;
     })
-    // const shares = portfolios[index].shares_owned;
-    // const nav = portfolios[index].NAV;
-    // let currentWeight = (((shares * this.state.price * this.state.exchangerate) / nav) *100).toFixed(2);
     this.setState({data : portfolios});
   };
+
   tickerClickSearch = (props) => {
     const value = props.value
     this.setState({
@@ -786,14 +819,53 @@ else{
                       },
                       {
                         Header: "Notional ($)",
-                        accessor: 0,
-                        Cell: props => (
-                          <div>
-                            {props.original.portfolio ? (props.original.shares * props.original.closeprice).toFixed(2): (props.original.SUM * props.original.closeprice).toFixed(2)}
-                          </div>
-                        ),
+                        accessor: "notional",
+                        // Cell: props => {
+                        //   // <div>
+                        //   //   {props.original.portfolio ? (props.original.shares * props.original.closeprice).toFixed(2): (props.original.SUM * props.original.closeprice).toFixed(2)}
+                        //   // </div>
+                        //   return <span>{this.getNotional(props)}</span>;
+                        // },
                         minWidth: 125,
                         filterable: false
+                      },
+                      {
+                        Header: "Current Weight(%)",
+                        accessor: "old_weight",
+                        // Cell: props => {
+                        //   return <span>{this.holdingCurrentWeight(props)}</span>;
+                        // },
+                        filterable: false,
+                        show: this.state.showExpanded,
+                        maxWidth: 200
+                      },
+                      {
+                        Header: "New Weight(%)",
+                        filterable: false,
+                        Cell: props => (
+                          <div>
+                            <input
+                              type="text"
+                              id="input1"
+                              placeholder="%"
+                              style={{
+                                width: "50px"
+                              }}
+                              className="number"
+                              value={this.getnewWeightValue(props)}
+                              onChange={e => this.handleNewWeightChange(props, e)}
+                            />
+                          </div>
+                        ),
+                        show: this.state.showExpanded,
+                        maxWidth: 200
+                      },
+                      {
+                        Header: "Shares to Buy/Sell",
+                        accessor: "shares_buy_sell",
+                        filterable: false,
+                        show: this.state.showExpanded,
+                        maxWidth: 200
                       },
                     ]
                   }
