@@ -48,7 +48,8 @@ export default class Login extends Component {
       .then(res => {
         // console.log(res);
         if (res.data !== null) {
-          sessionStorage.name = res.data.firstName;
+          //--------------------------------------------- uncomment this afer -----------------------------------------
+          // sessionStorage.name = res.data.firstName;
           this.props.history.push('/oms');;
         } else {
           console.log(`does not work`);
@@ -74,8 +75,6 @@ export default class Login extends Component {
                 placeholder = "Username"
                 value={this.state.userName}
                 onChange={this.handleUserNameChange}
-                onfocus={this.placeholder = ""}
-                onBlur={this.placeholder = "Username"}
               />
   
             </div>
@@ -87,8 +86,6 @@ export default class Login extends Component {
                 value={this.state.password}
                 onChange={this.handlePasswordChange}
                 placeholder = "Password"
-              onfocus={(e) => e.target.placeholder = ""}
-              onBlur={(e) => e.target.placeholder = "Password"}
               />
              
             </div>

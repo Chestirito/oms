@@ -32,6 +32,15 @@ if (process.env.NODE_ENV === "test") {
   syncOptions.force = true;
 }
 
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, './client/build/index.html'), function(err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+})
+
+
 db.sequelize.sync(syncOptions).then(function() {
   app.listen(PORT,function() {
     console.log(

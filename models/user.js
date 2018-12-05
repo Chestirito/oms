@@ -45,6 +45,11 @@ module.exports = function(Sequelize, DataTypes) {
           msg: "Invalid last name"
         }
       }
+    },
+    admin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
     },
     {
