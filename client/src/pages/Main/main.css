@@ -168,6 +168,23 @@ width:100%;
   font-weight: bold;
   }
 
+  .extendedSideBar.hide{
+    display:none;
+    
+    transition-timing-function: ease-in;
+    transition: 0.2s;
+    transform: translateX(130%);
+    
+    }
+    
+    .extendedSideBar.show{
+      margin-left:5px;
+      height:80vh;
+      width:30%;
+      -webkit-animation: slide-left .3s ease-out;
+      -moz-animation: slide-left .3s ease-out;
+    }
+
 .sideBar.hide{
 display:none;
 

@@ -20,6 +20,7 @@ import CloseSideBtn from "../../components/CloseSideBtn";
 import HoldingsBtn from "../../components/holdingsBtn/holdingsBtn";
 import ThemeButton from "../../components/themebtn/themebtn";
 import SendButton from "../../components/sendBtn/sendBtn";
+import ExpandButton from "../../components/expandButton/expandButton"
 
 // import { elementContains } from "@uifabric/utilities";
 initializeIcons();
@@ -41,10 +42,19 @@ class Main extends Component {
     oldWeight: 0,
     NAV: 0,
     showsidebar: false,
+    showExtendedSideBar: false,
     portfolioname: "",
     timer: 0
   };
 
+  toggleExtendedSideBar = () => {
+    this.setState({
+      showsidebar: false,
+      showExtendedSideBar: !this.state.showExtendedSideBar,
+
+    });
+
+  };
   toggleSideBar = () => {
     this.setState({
       showsidebar: !this.state.showsidebar
@@ -404,6 +414,33 @@ else{
   };
   }
   
+  showExtendedHoldings = () => {
+    if (this.state.showExtendedSideBar){
+    this.setState({
+      portfolioname:"All Holdings"
+    })
+   
+    API.aggregateHoldings()
+      .then(res => {
+        //console.log(res)
+        this.setupHoldingsData(res.data);
+      })
+      .catch(err => console.log(err));
+    }
+      else
+      { this.toggleExtendedSideBar(); this.setState({
+        portfolioname:"All Holdings"
+      })
+     
+      API.aggregateHoldings()
+        .then(res => {
+          //console.log(res)
+          this.setupHoldingsData(res.data);
+        })
+        .catch(err => console.log(err));
+      }
+  };
+
   showAllHoldings = () => {
     if (this.state.showsidebar){
     this.setState({
@@ -503,6 +540,7 @@ else{
 
   render = () => {
     const sidebarvis = this.state.showsidebar ? "show" : "hide";
+    const extendedSideBarVis = this.state.showExtendedSideBar ? "show" : "hide";
     return (
       <div className="App">
         <div className="top">
@@ -806,7 +844,83 @@ else{
             ) : (
               <h2>No Data</h2>
             )}
+            <ExpandButton  showExtendedHoldings={this.showExtendedHoldings}/>
           </div>
+
+              {/*======================================================= extendedsidebar =======================================*/}
+
+            <div className={`extendedSideBar ${extendedSideBarVis}`}>
+            <span className = "tabletitlename">{this.state.portfolioname}</span> <CloseSideBtn onClick={() => this.toggleSideBar()} />
+            {this.state.holdingsData.length ? (
+              <ReactTable
+              filterable
+                data={this.state.holdingsData}
+                columns={[
+                  {
+                    //Header: "Name",
+                    columns: [
+                      {
+                        Header: "ID",
+                        id: "id",
+                        accessor: "id",
+                        show: false,
+                        minWidth: 125
+                      },
+                      {
+                        Header: "TESTING",
+                        id: "ticker",
+                        accessor: d => d.ticker,
+                        filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, {
+                          keys: ["ticker"]
+                        }),
+                        Cell: props => (
+                          <div
+                            className="tickerBtn"
+                            onClick={() => this.tickerClickSearch(props)}
+                          >
+                            {props.original.ticker}
+                          </div>
+                        ),
+                        filterAll: true,
+                        minWidth: 125
+                      },
+                      {
+                        Header: "Shares Owned",
+                        accessor: "SUM",
+                        Cell: props => (
+                          <div>
+                            {props.original.portfolio ? props.original.shares:  props.original.SUM}
+                          </div>
+                        ),
+                        minWidth: 125,
+                        filterable: false
+                      },
+                      {
+                        Header: "Notional ($)",
+                        accessor: 0,
+                        Cell: props => (
+                          <div>
+                            {props.original.portfolio ? (props.original.shares * props.original.closeprice).toFixed(2): (props.original.SUM * props.original.closeprice).toFixed(2)}
+                          </div>
+                        ),
+                        minWidth: 125,
+                        filterable: false
+                      },
+                    ]
+                  }
+                ]}
+                //defaultPageSize={10}
+                className="-striped -highlight companytable"
+                showPagination={false}
+                pageSize={this.state.holdingsData.length}
+              />
+            ) : (
+              <h2>No Data</h2>
+            )}
+          </div>
+
+          {/* END OF TABLE */}
         </div>
         
       
