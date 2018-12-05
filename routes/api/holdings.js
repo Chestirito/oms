@@ -3,6 +3,7 @@ var db = require("../../models");
 module.exports = function(app) {
   // Get all examples
   
+  // sum is total of shares owned 
   app.get("/api/aggregate/Holdings/", function(req, res) {
     //console.log("getting holdings");
     db.Holdings.aggregate('shares', 'SUM', { plain: false, group: [ 'ticker' ], attributes: [ 'ticker', 'closeprice' ]

@@ -15,9 +15,14 @@ export default class Admin extends Component {
       password: "",
       firstName: "",
       lastName: "",
+      checked: true,
     };
   }
 
+  componentDidMount() {
+    this.handleAllUsers()
+    console.log(this.state.checked)
+  }
   validateForm() {
     return this.state.email.length > 0 && this.state.password.length > 0;
   }
@@ -34,17 +39,44 @@ export default class Admin extends Component {
       password: event.target.value
     });
   };
+  
+  handleFirstNameChange = event => {
+    this.setState({
+      firstName: event.target.value
+    });
+  };
+
+  handleLastNameChange = event => {
+    this.setState({
+      lastName: event.target.value
+    });
+  };
 
   handleSubmit = event => {
     event.preventDefault();
-  };
+  };   
+
+  handleCheck = event => {
+      this.setState({
+          checked: !this.state.checked
+      })
+      console.log(this.state.checked)
+  }
+
+  handleAllUsers = () => {
+      API.getUsers()
+      .then(res => {
+          console.log(res)
+      })
+  }
 
   handleLogin = () => {
     const userInput = {
       userName: this.state.userName,
       password: this.state.password,
       firstName: this.state.firstName,
-      lastName: this.state.lastName
+      lastName: this.state.lastName,
+      admin: this.state.checked
     };
     console.log(userInput);
     API.postingLoginData(userInput)
@@ -64,40 +96,80 @@ export default class Admin extends Component {
   render() {
     return (
       <div className="logindiv">
-        <form className="card centered" onSubmit={this.handleSubmit}>
-          <div className="card-body">
-            <img className="logo" alt="icon" src={logo} />
-            <h2> Login </h2>
-            <div className="form-group">
-              <input
-                className="form-control"
-                type="userName"
-                placeholder = "Username"
-                value={this.state.userName}
-                onChange={this.handleUserNameChange}
-                onfocus={this.placeholder = ""}
-                onBlur={this.placeholder = "Username"}
-              />
-  
-            </div>
+        <div className="container">
+            <div className="row">
+                <div className="col-6">
+                    <h1>Users List</h1>
+                </div>
+                <div className="col-6">
 
-            <div className="form-group">
-              <input
-                className="form-control"
-                type="password"
-                value={this.state.password}
-                onChange={this.handlePasswordChange}
-                placeholder = "Password"
-              onfocus={(e) => e.target.placeholder = ""}
-              onBlur={(e) => e.target.placeholder = "Password"}
-              />
-             
+                    <form className="card" onSubmit={this.handleSubmit}>
+                        <div className="card-body">
+                        <img className="logo" alt="icon" src={logo} />
+                        <h2> Signup Form </h2>
+                            <div className="form-group">
+                            <input
+                            className="form-control"
+                            type="userName"
+                            placeholder = "Username"
+                            value={this.state.userName}
+                            onChange={this.handleUserNameChange}
+                            // onfocus={this.placeholder = ""}
+                            // onBlur={this.placeholder = "Username"}
+                            />
+
+                            </div>
+
+                            <div className="form-group">
+                            <input
+                            className="form-control"
+                            type="password"
+                            value={this.state.password}
+                            onChange={this.handlePasswordChange}
+                            placeholder = "Password"
+                            />
+
+                            </div>
+
+                            <div className="form-group">
+                            <input
+                            className="form-control"
+                            type="password"
+                            value={this.state.firstName}
+                            onChange={this.handleFirstNameChange}
+                            placeholder = "First Name"
+                            />
+
+                            </div>
+
+                            <div className="form-group">
+                            <input
+                            className="form-control"
+                            type="password"
+                            value={this.state.lastName}
+                            onChange={this.handleLastNameChange}
+                            placeholder = "Last Name"
+                            />
+
+                            </div>
+
+                            <div className="row m-1">
+                                <div className="form-check">
+                                    <input className="form-check-input" type="checkbox" onChange={this.handleCheck} id="defaultCheck1" />
+                                    <label className="form-check-label mr-2">
+                                    Admin?
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className = "loginbutton">
+                            <SignupBtn onClick={this.handleLogin} type="submit" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div className = "loginbutton">
-            <SignupBtn onClick={this.handleLogin} type="submit" />
-          </div>
-          </div>
-        </form>
+        </div>
       </div>
     );
   }
