@@ -40,7 +40,12 @@ class Main extends Component {
     holdingsData: [],
     oldWeight: 0,
     NAV: 0,
+    allHold: {
+      newWeight: 0,
+      changed: false
+    },
     showsidebar: false,
+    showExpanded: false,
     portfolioname: "",
     timer: 0
   };
@@ -56,9 +61,8 @@ class Main extends Component {
     this.loadPortfolioStaging();
     this.handlePortfolioManager();
     this.handleAllHolding();
-    setTimeout(this.autoRefresh, 5000);
-    setTimeout(this.timeStamp, 1000);
-    //this.autoRefresh();
+    //setTimeout(this.autoRefresh, 5000);
+    //this.timeStamp();
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
@@ -258,33 +262,45 @@ class Main extends Component {
   //((new weight - old weight) *x* NAV) */* (price per share *x* FX rate)
   handleStageSubmit = () => {
     const holdings = this.state.holdingsData;
-    const portfolios = this.state.data
+    const portfolios = this.state.data;
     portfolios.push(...holdings)
+    let saveThis = [];
     //console.log(portfolios)
     portfolios.map(element => {
       if (element.changed) {
-        this.handleSaveStages(element);
+        //this.handleSaveStages(element);
+        saveThis.push(element);
       }
     });
+
+    this.handleSaveStages(saveThis);
+
+    if(this.state.allHold.changed){
+      this.calculateForAllHolding();
+    }
   };
   // user [...]
   handleSaveStages = data => {
-    
-    const save = {
-      portfolio_manager: this.state.portfolio_manager,
-      ticker: data.holdings ? data.ticker : this.state.ticker,
-      portfolio: data.portfolio,
-      old_weight: data.old_weight,
-      new_weight: data.newWeight,
-      shares_buy_sell: data.shares_buy_sell,
-      buy_or_sell: data.buy_or_sell,
-      ticker_name: data.holdings ? null : this.state.tickerName
-    };
+    let storeArray = [];
+    data.map(element => {
+      const store = {
+        portfolio_manager: this.state.portfolio_manager,
+        ticker: element.holdings ? element.ticker : this.state.ticker,
+        portfolio: element.portfolio,
+        old_weight: element.old_weight,
+        new_weight: element.newWeight,
+        shares_buy_sell: element.shares_buy_sell,
+        buy_or_sell: element.buy_or_sell,
+        ticker_name: element.holdings ? null : this.state.tickerName
+      };
+      storeArray.push(store);
+    });
+  
 
-    API.postStagingData(save)
+    API.postStagingData(storeArray)
       .then(res => {
         this.loadPortfolioStaging();
-        // this.loadCashUpdate();
+        this.setupHoldingsData(this.state.holdingsData);
       })
       .catch(err => console.log(err));
   };
@@ -314,18 +330,30 @@ class Main extends Component {
     });
     let weight =  portfolios[index].newWeight / 100 - portfolios[index].old_weight / 100;
     this.handleBuyOrSell(index, weight, portfolios);
-    const price = props.original.holdings ? portfolios[index].closeprice : this.state.price;
-    if (weight < 0) {
+    let price; //= props.original.holdings ? portfolios[index].closeprice : this.state.price;
+    if(props.original.holdings){
+      price = portfolios[index].closeprice;
+      let newShares =
+        (Math.abs(weight) * portfolios[index].NAV) /
+        (price);
+      return (portfolios[index].shares_buy_sell =
+        Math.round(newShares / 100) * 100);
+    }
+    else{
+      price = this.state.price;
+      // if (weight < 0) {
       let newShares =
         (Math.abs(weight) * portfolios[index].NAV) /
         (price * this.state.exchangerate);
       return (portfolios[index].shares_buy_sell =
         Math.round(newShares / 100) * 100);
-    } else {
-      let newShares =
-        (weight * portfolios[index].NAV) / (price * this.state.exchangerate);
-      return (portfolios[index].shares_buy_sell =
-        Math.round(newShares / 100) * 100);
+      // } else {
+      //   let newShares =
+      //     (weight * portfolios[index].NAV) / 
+      //     (price * this.state.exchangerate);
+      //   return (portfolios[index].shares_buy_sell =
+      //     Math.round(newShares / 100) * 100);
+      // }
     }
   };
 
@@ -365,82 +393,93 @@ class Main extends Component {
     //this.setState
   };
 
-  testing = () => {
-    console.log("click works");
-  };
-
   handleHoldingTable = props => { 
     
     if (this.state.showsidebar) {
       const portfolio = props.original.portfolio;
       const oldWeight = props.original.old_weight;
+      //**********************CALCULATE oldWeight based on notional******/
       const nav = props.original.NAV;
       this.setState({
         oldWeight: oldWeight,
         NAV: nav,
-        portfolioname: portfolio
+        portfolioname: portfolio,
+        showExpanded: true
       });
       API.getHoldingsByPortfolio(portfolio)
         .then(res => {
           this.setupHoldingsData(res.data);
         })
         .catch(err => console.log(err));
+    }
+    else{
+        this.toggleSideBar();
+        const portfolio = props.original.portfolio;
+        const oldWeight = props.original.old_weight;
+        const nav = props.original.NAV;
+        this.setState({
+          oldWeight: oldWeight,
+          NAV: nav,
+          portfolioname: portfolio,
+          showExpanded: true
+        });
+        API.getHoldingsByPortfolio(portfolio)
+          .then(res => {
+            this.setupHoldingsData(res.data);    
+          })
+          .catch(err => console.log(err));
+    };
   }
-else{
-    this.toggleSideBar();
-    const portfolio = props.original.portfolio;
-    const oldWeight = props.original.old_weight;
-    const nav = props.original.NAV;
-    this.setState({
-      oldWeight: oldWeight,
-      NAV: nav,
-      portfolioname: portfolio
-    });
-    API.getHoldingsByPortfolio(portfolio)
-      .then(res => {
-        this.setupHoldingsData(res.data);    
-      })
-      .catch(err => console.log(err));
-  };
+  holdingCurrentWeight = data =>{
+    //let isPortfolio = data.portfolio; 
+    let currentWeight = ((data.notional/data.NAV)*100).toFixed(2);
+    return currentWeight;
+
   }
-  
+
   showAllHoldings = () => {
     if (this.state.showsidebar){
-    this.setState({
-      portfolioname:"All Holdings"
-    })
-   
-    API.aggregateHoldings()
-      .then(res => {
-        //console.log(res)
-        this.setupHoldingsData(res.data);
+      this.setState({
+        portfolioname:"All Holdings",
+        showExpanded: false
       })
-      .catch(err => console.log(err));
-    }
-      else
-      { this.toggleSideBar(); this.setState({
-        portfolioname:"All Holdings"
-      })
-     
+    
       API.aggregateHoldings()
         .then(res => {
           //console.log(res)
           this.setupHoldingsData(res.data);
         })
         .catch(err => console.log(err));
-      }
+    }
+    else
+    { 
+      this.toggleSideBar(); 
+      this.setState({
+        portfolioname:"All Holdings",
+        showExpanded: false
+      })
+      
+      API.aggregateHoldings()
+        .then(res => {
+          //console.log(res)
+          this.setupHoldingsData(res.data);
+        })
+        .catch(err => console.log(err));
+    }
   };
 
   setupHoldingsData = data => {
-    //console.log(data)
+    // console.log("from setup holdingdata");
+    // console.log(data);
     data.map(element => {
+      element.notional = this.setupNotional(element);
       element.newWeight = "";
       element.changed = false;
       element.holdings = true;
       element.shares_buy_sell = 0;
-      element.old_weight = this.state.oldWeight;
       element.NAV = this.state.NAV;
       element.buy_or_sell = "";
+      element.old_weight = this.holdingCurrentWeight(element);
       // element.total_ticker_price = this.data.SUM;
     });
     this.setState({
@@ -456,23 +495,56 @@ else{
       .catch(err => console.log(err));
   };
 
+  setupNotional = data =>{
+    let isPortfolio = data.portfolio; 
+    let notional;
+    if(isPortfolio){
+      notional = (data.shares * data.closeprice).toFixed(2);
+      return notional;
+    }else{
+      notional = (data.SUM * data.closeprice).toFixed(2);
+      return notional;
+    }
+    
+    //return notional;
+  }
+
+  changeAllholding = event => {
+    this.setState({
+      allHold : {
+        newWeight : event,
+        changed : event ? true : false
+      }
+    })
+  }
+
+  calculateForAllHolding(){
+    let newWeight = this.state.allHold.newWeight;
+    let holdings = this.state.holdingsData;
+    let storeData = []
+    holdings.map(element => {
+      //console.log(element);
+      let newShares = ((newWeight/100)*element.NAV)/element.closeprice;
+      element.shares_buy_sell = Math.round(newShares / 100) * 100;
+      element.buy_or_sell = ((newWeight>0) ? "buy" : "sell");
+      element.newWeight = parseFloat(newWeight) + parseFloat(element.old_weight);
+      //console.log(element);
+      storeData.push(element);
+    })
+    this.handleSaveStages(storeData);
+  }
   //old weight
   handleCurrentWeight = () => {
     const portfolios = this.state.data;
-    // const index = portfolios.findIndex(element => {
-    //   return element.id === props.row.id;
-    // });
     portfolios.map(element => {
       const shares = element.shares_owned;
       const nav = element.NAV;
       let currentWeight = (((shares * this.state.price * this.state.exchangerate) / nav) *100).toFixed(2);
       element.old_weight = currentWeight;
     })
-    // const shares = portfolios[index].shares_owned;
-    // const nav = portfolios[index].NAV;
-    // let currentWeight = (((shares * this.state.price * this.state.exchangerate) / nav) *100).toFixed(2);
     this.setState({data : portfolios});
   };
+
   tickerClickSearch = (props) => {
     const value = props.value
     this.setState({
@@ -786,14 +858,59 @@ else{
                       },
                       {
                         Header: "Notional ($)",
-                        accessor: 0,
-                        Cell: props => (
-                          <div>
-                            {props.original.portfolio ? (props.original.shares * props.original.closeprice).toFixed(2): (props.original.SUM * props.original.closeprice).toFixed(2)}
-                          </div>
-                        ),
+                        accessor: "notional",
                         minWidth: 125,
                         filterable: false
+                      },
+                      {
+                        Header: "Current Weight(%)",
+                        accessor: "old_weight",
+                        filterable: false,
+                        show: this.state.showExpanded,
+                        maxWidth: 200
+                      },
+                      {
+                        Header: "New Weight(%)",
+                        filterable: true,
+                        Filter: ({ filter, onChange }) =>
+                          <div>
+                            <input
+                              type="text"
+                              id="input1"
+                              placeholder="%"
+                              style={{
+                                width: "50px"
+                              }}
+                              className="number"
+                              value={this.state.allHold.newWeight ? this.state.allHold.newWeight  : ""}
+                              onChange={event => this.changeAllholding(event.target.value)}
+                            />
+                          </div>
+                        ,
+                        Cell: props => (
+                          <div>
+                            <input
+                              type="text"
+                              id="input1"
+                              placeholder="%"
+                              style={{
+                                width: "50px"
+                              }}
+                              className="number"
+                              value={this.getnewWeightValue(props)}
+                              onChange={e => this.handleNewWeightChange(props, e)}
+                            />
+                          </div>
+                        ),
+                        show: this.state.showExpanded,
+                        maxWidth: 200
+                      },
+                      {
+                        Header: "Shares to Buy/Sell",
+                        accessor: "shares_buy_sell",
+                        filterable: false,
+                        show: this.state.showExpanded,
+                        maxWidth: 200
                       },
                     ]
                   }
