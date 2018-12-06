@@ -6,7 +6,7 @@ import SignupBtn from "../../components/SignupBtn";
 import "./Admin.css";
 import logo from "../Login/img/barlogo-01.png";
 import { Link } from "react-router-dom";
-import DisplayUsers from "../../components/DisplayUsers"
+import DisplayUsers from "../../components/DisplayUsers";
 
 export default class Admin extends Component {
   constructor(props) {
@@ -18,11 +18,9 @@ export default class Admin extends Component {
       firstName: "",
       lastName: "",
       checked: false,
-      usersData: [],
+      usersData: []
     };
   }
-
-  
 
   componentDidMount() {
     this.handleAllUsers();
@@ -102,94 +100,91 @@ export default class Admin extends Component {
           console.log(`does not work`);
         }
         // console.log(res.data);
-        this.handleAllUsers()
+        this.handleAllUsers();
       })
-      .catch(err => console.log(err))
-  }
+      .catch(err => console.log(err));
+  };
 
   render() {
     return (
       <div className="logindiv">
-        <div className="signuplogodiv">
-        <Link to="/oms">
-          <img className="logosignup" alt="icon" src={logo} />
-          </Link>
-        <div className="container">
-            <div className="row">
-                <div className="col-6">
-                    <h1>Users List</h1> 
-                    <DisplayUsers name={this.state.usersData}/>
-                </div>
-                <div className="col-6">
-
-                    <form className="card" onSubmit={this.handleSubmit}>
-                        <div className="card-body">
-                        <img className="logo" alt="icon" src={logo} />
-                        <h2> Signup Form </h2>
-                            <div className="form-group">
-                            <input
-                            className="form-control"
-                            type="userName"
-                            placeholder = "Username"
-                            value={this.state.userName}
-                            onChange={this.handleUserNameChange}
-                            // onfocus={this.placeholder = ""}
-                            // onBlur={this.placeholder = "Username"}
-                            />
-
-                            </div>
-
-                            <div className="form-group">
-                            <input
-                            className="form-control"
-                            type="password"
-                            value={this.state.password}
-                            onChange={this.handlePasswordChange}
-                            placeholder = "Password"
-                            />
-
-                            </div>
-
-                            <div className="form-group">
-                            <input
-                            className="form-control"
-                            type="firstName"
-                            value={this.state.firstName}
-                            onChange={this.handleFirstNameChange}
-                            placeholder = "First Name"
-                            />
-
-                            </div>
-
-                            <div className="form-group">
-                            <input
-                            className="form-control"
-                            type="lastName"
-                            value={this.state.lastName}
-                            onChange={this.handleLastNameChange}
-                            placeholder = "Last Name"
-                            />
-
-                            </div>
-
-                            <div className="row m-1">
-                                <div className="form-check">
-                                    <input className="form-check-input" type="checkbox" onChange={this.handleCheck} id="defaultCheck1" />
-                                    <label className="form-check-label mr-2">
-                                    Admin?
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div className = "loginbutton">
-                            <SignupBtn onClick={this.handleSignup} type="submit" />
-                            </div>
-                        </div>
-                    </form>
-                </div>
+        <div className="row">
+          <div className="col-6">
+            <div className="signuplogodiv">
+              <Link to="/oms">
+                <img className="logosignup" alt="icon" src={logo} />
+              </Link>
             </div>
-        </div>
-        
+            <form className="card signupcard" onSubmit={this.handleSubmit}>
+              <div className="card-body ">
+                <h2> Admin Access </h2>
+                <div className="form-group">
+                  <input
+                    className="form-control"
+                    type="userName"
+                    placeholder="Username"
+                    value={this.state.userName}
+                    onChange={this.handleUserNameChange}
+                    // onfocus={this.placeholder = ""}
+                    // onBlur={this.placeholder = "Username"}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <input
+                    className="form-control"
+                    type="password"
+                    value={this.state.password}
+                    onChange={this.handlePasswordChange}
+                    placeholder="Password"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <input
+                    className="form-control"
+                    type="firstName"
+                    value={this.state.firstName}
+                    onChange={this.handleFirstNameChange}
+                    placeholder="First Name"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <input
+                    className="form-control"
+                    type="lastName"
+                    value={this.state.lastName}
+                    onChange={this.handleLastNameChange}
+                    placeholder="Last Name"
+                  />
+                </div>
+
+                <div className="row m-1">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      onChange={this.handleCheck}
+                      id="defaultCheck1"
+                    />
+                    <label className="form-check-label mr-2">Admin?</label>
+                  </div>
+                </div>
+                <div className="loginbutton">
+                  <SignupBtn onClick={this.handleSignup} type="submit" />
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div className="col-6 userstable">
+         
+         <DisplayUsers name={this.state.usersData} />
+          </div>
+
+    </div>
+      </div>
     );
   }
 }

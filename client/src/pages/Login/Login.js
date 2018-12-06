@@ -47,21 +47,13 @@ export default class Login extends Component {
     // console.log(userInput);
     API.postingLoginData(userInput)
       .then(res => {
-        // console.log(res);
-<<<<<<< HEAD
-        if (res.data !== null) {
-          //--------------------------------------------- uncomment this afer -----------------------------------------
-          // sessionStorage.name = res.data.firstName;
-          this.props.history.push('/oms');
-
-=======
         if (res.data.admin) {
-          this.props.history.push('/admin');;
+          this.props.history.push('/oms');;
+          window.sessionStorage.setItem("admin", true);
         } else if (res.data !== null){
           this.props.history.push('/oms');;
            //--------------------------------------------- uncomment this afer -----------------------------------------
           sessionStorage.name = res.data.firstName;
->>>>>>> 66aac5ff8a018c7472dae91c91b9834571330a90
         } else {
           console.log(`does not work`);
         }

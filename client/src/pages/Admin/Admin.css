@@ -1,9 +1,20 @@
 .signuplogodiv{
     text-align: center; 
+    margin-top:5vh;
 }
 
 .logosignup {
-    margin-right: 2vh;
-    width: 18%;
+    margin-left: 10vh;
+    width: 30%;
+       
+  }
+
+  .signupcard{
+     left: 20vw;
     
+  }
+
+  .userstable{
+      margin-top:20vh;
+      padding-right:10vh;
   }
