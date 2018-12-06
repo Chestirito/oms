@@ -39,18 +39,20 @@ export default class Login extends Component {
   };
 
   handleLogin = () => {
+    window.sessionStorage.setItem("username", this.state.userName);
     const userInput = {
       userName: this.state.userName,
       password: this.state.password
     };
-    console.log(userInput);
+    // console.log(userInput);
     API.postingLoginData(userInput)
       .then(res => {
         // console.log(res);
         if (res.data !== null) {
           //--------------------------------------------- uncomment this afer -----------------------------------------
           // sessionStorage.name = res.data.firstName;
-          this.props.history.push('/oms');;
+          this.props.history.push('/oms');
+
         } else {
           console.log(`does not work`);
         }
@@ -65,6 +67,7 @@ export default class Login extends Component {
           <div className ="loginlogodiv">
             <img className="logo" alt="icon" src={logo} /></div>
         <form className="card centered" onSubmit={this.handleSubmit}>
+          
           <div className="card-body">
       
            

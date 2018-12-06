@@ -18,8 +18,8 @@ import logo from "../Login/img/barlogo-01.png";
 import matchSorter from "match-sorter";
 import CloseSideBtn from "../../components/CloseSideBtn";
 import HoldingsBtn from "../../components/holdingsBtn/holdingsBtn";
-import ThemeButton from "../../components/themebtn/themebtn";
-import SendButton from "../../components/sendBtn/sendBtn";
+import AdminButton from "../../components/adminButton/adminButton";
+// import SendButton from "../../components/sendBtn/sendBtn";
 
 // import { elementContains } from "@uifabric/utilities";
 initializeIcons();
@@ -47,9 +47,20 @@ class Main extends Component {
     showsidebar: false,
     showExpanded: false,
     portfolioname: "",
-    timer: 0
+    timer: 0,
+    name: "",
+    admin: true
   };
 
+  
+
+  authenticateAdmin = () =>{
+    var username = sessionStorage.getItem("username");
+    this.setState({
+      name: username
+    })
+    // authenticate admin status through database
+  }
   toggleSideBar = () => {
     this.setState({
       showsidebar: !this.state.showsidebar
@@ -63,6 +74,7 @@ class Main extends Component {
     this.handleAllHolding();
     setTimeout(this.autoRefresh, 5000);
     this.timeStamp();
+    this.authenticateAdmin();
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
@@ -172,7 +184,7 @@ class Main extends Component {
   };
 
   handlePortfolioManager = () => {
-    const manager = sessionStorage.name;
+    const manager = sessionStorage.username;
     this.setState({
       portfolio_manager: manager
     });
@@ -575,6 +587,7 @@ class Main extends Component {
   };
 
   render = () => {
+    console.log(this.props);
     const sidebarvis = this.state.showsidebar ? "show" : "hide";
     return (
       <div className="App">
@@ -605,8 +618,8 @@ class Main extends Component {
           </div>
           
           <div className="buttonsdiv">
-          
-           <ThemeButton/>
+          <div className = "userName"><span>Weclome back, {this.state.name}</span></div>
+           <AdminButton/> 
 
            <SaveBtn handleStageSubmit={this.handleStageSubmit} />
 
@@ -806,7 +819,8 @@ class Main extends Component {
           ) : (
             <h2>No Trades Ordered</h2>
           )}
-          <SendButton/></div> 
+          {/* <SendButton/> */}
+          </div> 
         </div>
           {/*======================================================= table 3 =======================================*/}
 

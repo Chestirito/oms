@@ -1,7 +1,7 @@
 USE omsDB;
 
-INSERT INTO portfolios (portfolio, mandate, NAV, cash) VALUES ("Portfolio 1", "segregated", 13000000, 3960000);
-INSERT INTO portfolios (portfolio, mandate, NAV, cash) VALUES ("Portfolio 2", "income", 12800000, 3840000);
+INSERT INTO portfolios (portfolio, mandate, NAV, cash) VALUES ("Portfolio 1", "segregated", 130000000, 3960000);
+INSERT INTO portfolios (portfolio, mandate, NAV, cash) VALUES ("Portfolio 2", "income", 128000000, 3840000);
 INSERT INTO portfolios (portfolio, mandate, NAV, cash) VALUES ("Portfolio 3", "income", 287000000, 8610000);
 INSERT INTO portfolios (portfolio, mandate, NAV, cash) VALUES ("Portfolio 4", "income", 29000000, 870000);
 INSERT INTO portfolios (portfolio, mandate, NAV, cash) VALUES ("Portfolio 5", "income", 29000000, 870000);
