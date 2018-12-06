@@ -5,6 +5,7 @@ import API from "../../utils/API";
 import SignupBtn from "../../components/SignupBtn";
 import "./Admin.css";
 import logo from "./img/barometer.png";
+import DisplayUsers from "../../components/DisplayUsers"
 
 export default class Admin extends Component {
   constructor(props) {
@@ -15,10 +16,12 @@ export default class Admin extends Component {
       password: "",
       firstName: "",
       lastName: "",
-      checked: true,
+      checked: false,
       usersData: [],
     };
   }
+
+  
 
   componentDidMount() {
     this.handleAllUsers()
@@ -83,28 +86,21 @@ export default class Admin extends Component {
     console.log(this.state.usersData)
   }
 
-  handleLogin = () => {
+  handleSignup = () => {
     const userInput = {
-      userName: this.state.userName,
+      username: this.state.userName,
       password: this.state.password,
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       admin: this.state.checked
     };
     console.log(userInput);
-    API.postingLoginData(userInput)
+    API.creatingUsers(userInput)
       .then(res => {
-        // console.log(res);
-        if (res.data !== null) {
-          sessionStorage.name = res.data.firstName;
-          this.props.history.push('/oms');;
-        } else {
-          console.log(`does not work`);
-        }
-        // console.log(res.data);
+        this.handleAllUsers()
       })
-      .catch(err => console.log(err));
-  };
+      .catch(err => console.log(err))
+  }
 
   render() {
     return (
@@ -113,6 +109,7 @@ export default class Admin extends Component {
             <div className="row">
                 <div className="col-6">
                     <h1>Users List</h1> 
+                    <DisplayUsers name={this.state.usersData}/>
                 </div>
                 <div className="col-6">
 
@@ -147,7 +144,7 @@ export default class Admin extends Component {
                             <div className="form-group">
                             <input
                             className="form-control"
-                            type="password"
+                            type="firstName"
                             value={this.state.firstName}
                             onChange={this.handleFirstNameChange}
                             placeholder = "First Name"
@@ -158,7 +155,7 @@ export default class Admin extends Component {
                             <div className="form-group">
                             <input
                             className="form-control"
-                            type="password"
+                            type="lastName"
                             value={this.state.lastName}
                             onChange={this.handleLastNameChange}
                             placeholder = "Last Name"
@@ -176,7 +173,7 @@ export default class Admin extends Component {
                             </div>
 
                             <div className = "loginbutton">
-                            <SignupBtn onClick={this.handleLogin} type="submit" />
+                            <SignupBtn onClick={this.handleSignup} type="submit" />
                             </div>
                         </div>
                     </form>
