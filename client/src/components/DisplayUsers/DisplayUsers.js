@@ -20,9 +20,19 @@ const DisplayUsers = props => (
                 Header: "Last Name",
                 accessor: "lastName"
             },
+            {
+                Header: "Admin",
+                // accessor: "admin",
+                Cell: props => (
+                    // console.log(props.original.admin.toString())
+                    <div>
+                      {props.original.admin.toString()}
+                    </div>
+                )
+            }
           ]
         }
-        defaultPageSize={15}
+        defaultPageSize={12}
         className="-striped -highlight"
         showPagination= {false}
         //defaultPageSize={this.state.data.length}
