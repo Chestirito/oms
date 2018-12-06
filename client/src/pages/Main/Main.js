@@ -55,9 +55,9 @@ class Main extends Component {
   
 
   authenticateAdmin = () =>{
-    var username = sessionStorage.getItem("username");
+    var firstname = sessionStorage.getItem("firstName");
     this.setState({
-      name: username
+      name: firstname
     })
     const ifAdmin = sessionStorage.getItem("admin");
     this.setState({
@@ -625,7 +625,7 @@ class Main extends Component {
           </div>
           
           <div className="buttonsdiv">
-          <div className = "userName"><span>Weclome back, {this.state.name}</span></div>
+          <div className = "userName"><span>Welcome back, {this.state.name}</span></div>
            
            {this.state.admin === "true" ? (<AdminButton/>): (null) }
            
