@@ -119,6 +119,12 @@ input[type="text"]:focus {
  
 }
 
+.userName{
+  color: white;
+  position: absolute;
+  left: 5vh;
+  bottom: 0
+}
 
 .portfoliotablespan{
 font-weight: bold;

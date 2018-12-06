@@ -18,8 +18,8 @@ import logo from "../Login/img/barlogo-01.png";
 import matchSorter from "match-sorter";
 import CloseSideBtn from "../../components/CloseSideBtn";
 import HoldingsBtn from "../../components/holdingsBtn/holdingsBtn";
-import ThemeButton from "../../components/themebtn/themebtn";
-import SendButton from "../../components/sendBtn/sendBtn";
+import AdminButton from "../../components/adminButton/adminButton";
+// import SendButton from "../../components/sendBtn/sendBtn";
 
 // import { elementContains } from "@uifabric/utilities";
 initializeIcons();
@@ -47,9 +47,23 @@ class Main extends Component {
     showsidebar: false,
     showExpanded: false,
     portfolioname: "",
-    timer: 0
+    timer: 0,
+    name: "",
+    admin: true
   };
 
+  
+
+  authenticateAdmin = () =>{
+    var username = sessionStorage.getItem("username");
+    this.setState({
+      name: username
+    })
+    const ifAdmin = sessionStorage.getItem("admin");
+    this.setState({
+      admin: ifAdmin
+    })
+  }
   toggleSideBar = () => {
     this.setState({
       showsidebar: !this.state.showsidebar
@@ -57,12 +71,17 @@ class Main extends Component {
 
   };
 
+  componentWillMount(){
+  this.authenticateAdmin();
+}
+
   componentDidMount() {
     this.loadPortfolioStaging();
     this.handlePortfolioManager();
     this.handleAllHolding();
     setTimeout(this.autoRefresh, 5000);
     this.timeStamp();
+   
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
@@ -172,7 +191,7 @@ class Main extends Component {
   };
 
   handlePortfolioManager = () => {
-    const manager = sessionStorage.name;
+    const manager = sessionStorage.username;
     this.setState({
       portfolio_manager: manager
     });
@@ -575,6 +594,7 @@ class Main extends Component {
   };
 
   render = () => {
+    console.log("adminstate"+this.state.admin)
     const sidebarvis = this.state.showsidebar ? "show" : "hide";
     return (
       <div className="App">
@@ -605,8 +625,10 @@ class Main extends Component {
           </div>
           
           <div className="buttonsdiv">
-          
-           <ThemeButton/>
+          <div className = "userName"><span>Weclome back, {this.state.name}</span></div>
+           
+           {this.state.admin === "true" ? (<AdminButton/>): (null) }
+           
 
            <SaveBtn handleStageSubmit={this.handleStageSubmit} />
 
@@ -618,6 +640,7 @@ class Main extends Component {
         
          
         </div>
+      
         {/* ==========================================            Table 1                  =============================== */}
         <div className = "wrapper">
         <div className={`tablesdiv ${sidebarvis}`}>
@@ -806,7 +829,8 @@ class Main extends Component {
           ) : (
             <h2>No Trades Ordered</h2>
           )}
-          <SendButton/></div> 
+          {/* <SendButton/> */}
+          </div> 
         </div>
           {/*======================================================= table 3 =======================================*/}
 
