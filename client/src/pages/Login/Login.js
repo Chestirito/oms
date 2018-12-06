@@ -54,6 +54,7 @@ export default class Login extends Component {
           this.props.history.push('/oms');;
            //--------------------------------------------- uncomment this afer -----------------------------------------
           sessionStorage.name = res.data.firstName;
+          window.sessionStorage.setItem("admin", false);
         } else {
           console.log(`does not work`);
         }

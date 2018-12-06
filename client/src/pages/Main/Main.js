@@ -59,7 +59,10 @@ class Main extends Component {
     this.setState({
       name: username
     })
-    // authenticate admin status through database
+    const ifAdmin = sessionStorage.getItem("admin");
+    this.setState({
+      admin: ifAdmin
+    })
   }
   toggleSideBar = () => {
     this.setState({
@@ -68,13 +71,17 @@ class Main extends Component {
 
   };
 
+  componentWillMount(){
+  this.authenticateAdmin();
+}
+
   componentDidMount() {
     this.loadPortfolioStaging();
     this.handlePortfolioManager();
     this.handleAllHolding();
     setTimeout(this.autoRefresh, 5000);
     this.timeStamp();
-    this.authenticateAdmin();
+   
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
@@ -587,7 +594,7 @@ class Main extends Component {
   };
 
   render = () => {
-    console.log(this.props);
+    console.log("adminstate"+this.state.admin)
     const sidebarvis = this.state.showsidebar ? "show" : "hide";
     return (
       <div className="App">
@@ -619,7 +626,9 @@ class Main extends Component {
           
           <div className="buttonsdiv">
           <div className = "userName"><span>Weclome back, {this.state.name}</span></div>
-           <AdminButton/> 
+           
+           {this.state.admin === "true" ? (<AdminButton/>): (null) }
+           
 
            <SaveBtn handleStageSubmit={this.handleStageSubmit} />
 
@@ -631,6 +640,7 @@ class Main extends Component {
         
          
         </div>
+      
         {/* ==========================================            Table 1                  =============================== */}
         <div className = "wrapper">
         <div className={`tablesdiv ${sidebarvis}`}>
