@@ -20,6 +20,16 @@ const DisplayUsers = props => (
                 Header: "Last Name",
                 accessor: "lastName"
             },
+            {
+                Header: "Admin",
+                // accessor: "admin",
+                Cell: props => (
+                    // console.log(props.original.admin.toString())
+                    <div>
+                      {props.original.admin.toString()}
+                    </div>
+                )
+            }
           ]
         }
         defaultPageSize={12}

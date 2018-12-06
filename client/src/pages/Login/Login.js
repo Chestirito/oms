@@ -52,7 +52,6 @@ export default class Login extends Component {
           window.sessionStorage.setItem("admin", true);
         } else if (res.data !== null){
           this.props.history.push('/oms');;
-           //--------------------------------------------- uncomment this afer -----------------------------------------
           sessionStorage.name = res.data.firstName;
           window.sessionStorage.setItem("admin", false);
         } else {
