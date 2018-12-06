@@ -22,7 +22,7 @@ const DisplayUsers = props => (
             },
           ]
         }
-        defaultPageSize={15}
+        defaultPageSize={12}
         className="-striped -highlight"
         showPagination= {false}
         //defaultPageSize={this.state.data.length}
