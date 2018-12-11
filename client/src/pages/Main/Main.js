@@ -348,7 +348,8 @@ class Main extends Component {
     const index = portfolios.findIndex(element => {
       return element.id === props.row.id;
     });
-    let weight =  portfolios[index].newWeight / 100 - portfolios[index].old_weight / 100;
+    let weight = portfolios[index].newWeight / 100 - portfolios[index].old_weight / 100;
+    console.log(weight)
     this.handleBuyOrSell(index, weight, portfolios);
     let price; //= props.original.holdings ? portfolios[index].closeprice : this.state.price;
     if(props.original.holdings){
@@ -399,7 +400,8 @@ class Main extends Component {
       });
       //this.calculateShares(props);
     }
-    if(parseInt(event.target.value)){
+    if(parseInt(event.target.value) || event.target.value == 0){
+      // console.log(props)
       this.calculateShares(props);
     }
   };
@@ -594,7 +596,7 @@ class Main extends Component {
   };
 
   render = () => {
-    console.log("adminstate"+this.state.admin)
+    // console.log("adminstate"+this.state.admin)
     const sidebarvis = this.state.showsidebar ? "show" : "hide";
     return (
       <div className="App">
