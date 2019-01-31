@@ -775,7 +775,6 @@ class Main extends Component {
                     {
                       Header: "Portfolio Manager",
                       accessor: "portfolio_manager",
-                      Cell: props => (`${this.state.name} / ${props.value}`),
                       minWidth: 100
                     },
                     {
