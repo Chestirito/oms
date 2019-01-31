@@ -80,8 +80,8 @@ class Main extends Component {
     this.loadPortfolioStaging();
     this.handlePortfolioManager();
     this.handleAllHolding();
-    setTimeout(this.autoRefresh, 5000);
-    this.timeStamp();
+    //setTimeout(this.autoRefresh, 5000);
+    //this.timeStamp();
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
