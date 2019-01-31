@@ -47,13 +47,14 @@ export default class Login extends Component {
     // console.log(userInput);
     API.postingLoginData(userInput)
       .then(res => {
-        if (res.data.admin) {
-          this.props.history.push('/oms');;
-          window.sessionStorage.setItem("admin", true);
-        } else if (res.data !== null){
-          this.props.history.push('/oms');;
-          sessionStorage.name = res.data.firstName;
-          window.sessionStorage.setItem("admin", false);
+        // if (res.data.admin) {
+        //   this.props.history.push('/oms');
+        //   window.sessionStorage.setItem("admin", true);
+        // } 
+        if (res.data !== null){
+          window.sessionStorage.setItem("firstName", res.data.firstName);
+          window.sessionStorage.setItem("admin", res.data.admin);
+          this.props.history.push('/oms');
         } else {
           console.log(`does not work`);
         }
@@ -61,6 +62,11 @@ export default class Login extends Component {
       })
       .catch(err => console.log(err));
   };
+
+  handleGuest = () =>{
+    window.sessionStorage.setItem("firstName", "Guest");
+    this.props.history.push('/oms');;
+  }
 
   render() {
     return (
@@ -94,8 +100,18 @@ export default class Login extends Component {
              
             </div>
             <div className = "loginbutton">
-            <LoginBtn onClick={this.handleLogin} type="submit" />
-          </div>
+              <LoginBtn 
+                onClick={this.handleLogin} 
+                type="submit" 
+                label="Login"
+              />
+              <div className="divider"></div>
+              <LoginBtn 
+                onClick={this.handleGuest} 
+                type="submit" 
+                label="Guest"
+              />
+            </div>
           </div>
         </form>
       </div>

@@ -5,7 +5,7 @@ import React from "react";
 // That way we don't have to define them all individually
 const LoginBtn = props => (
   <button className="btn btn-dark" {...props}>
-    Login
+    {props.label}
   </button>
 );
 

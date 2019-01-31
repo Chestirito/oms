@@ -71,17 +71,17 @@ class Main extends Component {
 
   };
 
-  componentWillMount(){
-  this.authenticateAdmin();
-}
+  // componentWillMount(){
+  //   this.authenticateAdmin();
+  // }
 
   componentDidMount() {
+    this.authenticateAdmin();
     this.loadPortfolioStaging();
     this.handlePortfolioManager();
     this.handleAllHolding();
     setTimeout(this.autoRefresh, 5000);
     this.timeStamp();
-   
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
@@ -773,6 +773,7 @@ class Main extends Component {
                     {
                       Header: "Portfolio Manager",
                       accessor: "portfolio_manager",
+                      Cell: props => (`${this.state.name} / ${props.value}`),
                       minWidth: 100
                     },
                     {

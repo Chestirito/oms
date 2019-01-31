@@ -36,3 +36,8 @@ body {
 .loginbutton{
   text-align: center;
 }
+.divider{
+  width:1rem;
+  height:auto;
+  display:inline-block;
+}
