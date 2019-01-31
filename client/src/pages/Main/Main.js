@@ -81,11 +81,14 @@ class Main extends Component {
     this.handlePortfolioManager();
     this.handleAllHolding();
     //setTimeout(this.autoRefresh, 5000);
-    //this.timeStamp();
+    this.timeStamp();
   }
   timeStamp = () => {
     let currentTime = this.state.timer;
     currentTime++;
+    if(currentTime >= 5){
+      this.autoRefresh();
+    }
     this.setState({ timer: currentTime });
     setTimeout(this.timeStamp, 1000);
   };
@@ -112,7 +115,7 @@ class Main extends Component {
     })
     .catch(err => console.log(err));
     
-    setTimeout(this.autoRefresh, 5000);
+    //setTimeout(this.autoRefresh, 5000);
   }
 
   loadPortfolioStaging(){
